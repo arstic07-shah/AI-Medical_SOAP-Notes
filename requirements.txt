@@ -1,2 +1,6 @@
 streamlit
 groq
+reportlab
+openpyxl
+pandas
+audio-recorder-streamlit
