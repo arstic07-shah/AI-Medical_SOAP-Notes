@@ -259,37 +259,46 @@ def show_login():
             st.markdown("<div class='card'>", unsafe_allow_html=True)
             email = st.text_input("Email", placeholder="doctor@clinic.com", key="login_email")
             password = st.text_input("Password", type="password", key="login_pass")
-          if st.button("Login to BIOS", key="login_btn"):
-    if email and password:
-        st.write(f"Trying: {email}")
-        result = supabase.table("doctors").select("*").eq("email", email.lower()).execute()
-        st.write(f"Result: {result.data}")
-        if result.data:
-            doc = result.data[0]
-            st.write(f"DB password: {doc['password_hash']}")
-            st.write(f"Input password: {password}")
-            st.write(f"Match: {doc['password_hash'] == password}")
+            if st.button("Login to BIOS", key="login_btn"):
+                if email and password:
+                    result = supabase.table("doctors").select("*").eq("email", email.lower()).execute()
+                    if result.data:
+                        doc = result.data[0]
+                        if doc["password_hash"] == password:
+                            if not doc["is_active"]:
+                                st.markdown("<div class='alert-red'>❌ Account suspended.</div>", unsafe_allow_html=True)
+                            else:
+                                supabase.table("doctors").update({"last_login": datetime.now().isoformat()}).eq("id", doc["id"]).execute()
+                                st.session_state.logged_in = True
+                                st.session_state.doctor = doc
+                                st.rerun()
+                        else:
+                            st.markdown("<div class='alert-red'>❌ Wrong password.</div>", unsafe_allow_html=True)
+                    else:
+                        st.markdown("<div class='alert-red'>❌ Email not found.</div>", unsafe_allow_html=True)
+                else:
+                    st.warning("Email aur password bharein.")
+            st.markdown("</div>", unsafe_allow_html=True)
 
         with tab2:
             st.markdown("<div class='card'>", unsafe_allow_html=True)
             st.markdown("<p class='card-title'>Create Your BIOS Account</p>", unsafe_allow_html=True)
-            r_name     = st.text_input("Full Name", placeholder="Dr. Ahmed Khan")
-            r_email    = st.text_input("Email", placeholder="ahmed@clinic.com", key="reg_email")
-            r_phone    = st.text_input("Phone", placeholder="03XX-XXXXXXX")
-            r_specialty= st.selectbox("Specialty", ["General Physician","Internal Medicine",
-                         "Paediatrician","Gynaecologist","Surgeon","Cardiologist",
-                         "Orthopaedic","ENT","Dermatologist","Other"])
-            r_clinic   = st.text_input("Clinic Name", placeholder="Al-Shifa Clinic, Lahore")
-            r_pass     = st.text_input("Password", type="password", key="reg_pass")
-            r_pass2    = st.text_input("Confirm Password", type="password", key="reg_pass2")
-
-            if st.button("Create Account — Start Free Trial", key="reg_btn"):
+            r_name      = st.text_input("Full Name", placeholder="Dr. Ahmed Khan")
+            r_email     = st.text_input("Email", placeholder="ahmed@clinic.com", key="reg_email")
+            r_phone     = st.text_input("Phone", placeholder="03XX-XXXXXXX")
+            r_specialty = st.selectbox("Specialty", ["General Physician","Internal Medicine",
+                          "Paediatrician","Gynaecologist","Surgeon","Cardiologist",
+                          "Orthopaedic","ENT","Dermatologist","Other"])
+            r_clinic    = st.text_input("Clinic Name", placeholder="Al-Shifa Clinic, Lahore")
+            r_pass      = st.text_input("Password", type="password", key="reg_pass")
+            r_pass2     = st.text_input("Confirm Password", type="password", key="reg_pass2")
+            if st.button("Create Account", key="reg_btn"):
                 if not all([r_name, r_email, r_phone, r_clinic, r_pass, r_pass2]):
                     st.warning("Sab fields bharein.")
                 elif r_pass != r_pass2:
                     st.markdown("<div class='alert-red'>❌ Passwords match nahi karte.</div>", unsafe_allow_html=True)
                 elif len(r_pass) < 6:
-                    st.markdown("<div class='alert-red'>❌ Password kam se kam 6 characters ka hona chahiye.</div>", unsafe_allow_html=True)
+                    st.markdown("<div class='alert-red'>❌ Password 6 characters ka hona chahiye.</div>", unsafe_allow_html=True)
                 else:
                     existing = supabase.table("doctors").select("id").eq("email", r_email.lower()).execute()
                     if existing.data:
@@ -300,7 +309,7 @@ def show_login():
                         supabase.table("doctors").insert({
                             "name": r_name,
                             "email": r_email.lower(),
-                            "password_hash": hash_password(r_pass),
+                            "password_hash": r_pass,
                             "specialty": r_specialty,
                             "clinic_name": r_clinic,
                             "phone": r_phone,
@@ -308,11 +317,10 @@ def show_login():
                             "plan_expiry": trial_expiry,
                             "is_active": True
                         }).execute()
-                        st.markdown("<div class='alert-green'>✅ Account created! 7-day free trial shuru ho gaya. Login karein.</div>", unsafe_allow_html=True)
+                        st.markdown("<div class='alert-green'>✅ Account created! Login karein.</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown("<p style='text-align:center;color:#334155;font-size:11px;margin-top:16px'>BIOS Medical Intelligence System · Confidential · 2025</p>", unsafe_allow_html=True)
-
 # ═══════════════════════════════════════════════════════════════════════════════
 # ADMIN PAGE
 # ═══════════════════════════════════════════════════════════════════════════════
