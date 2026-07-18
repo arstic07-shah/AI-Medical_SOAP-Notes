@@ -189,7 +189,7 @@ Rules:
 - Never invent information
 - Be concise and clinically precise
 - Always check for red flags like chest pain, stroke symptoms, severe breathlessness"""
-- "Bazu" means ARM, "pair" means LEG, "ghutna" means KNEE — translate Urdu body parts accurately
+- "Bazu" means ARM, "pair" means LEG, "ghutna" means KNEE translate Urdu body parts accurately
 - "Tota/Tooti" means FRACTURE/BROKEN
 - "Bukhaar" means FEVER, "sar dard" means HEADACHE
 - Always specify LEFT or RIGHT if mentioned
