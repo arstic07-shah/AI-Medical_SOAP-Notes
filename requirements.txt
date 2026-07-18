@@ -4,3 +4,4 @@ reportlab
 openpyxl
 pandas
 audio-recorder-streamlit
+supabase
