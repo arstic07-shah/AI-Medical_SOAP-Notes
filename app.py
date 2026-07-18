@@ -259,26 +259,16 @@ def show_login():
             st.markdown("<div class='card'>", unsafe_allow_html=True)
             email = st.text_input("Email", placeholder="doctor@clinic.com", key="login_email")
             password = st.text_input("Password", type="password", key="login_pass")
-            if st.button("Login to BIOS", key="login_btn"):
-                if email and password:
-                    result = supabase.table("doctors").select("*").eq("email", email.lower()).execute()
-                    if result.data:
-                        doc = result.data[0]
-                        if doc["password_hash"] == hash_password(password):
-                            if not doc["is_active"]:
-                                st.markdown("<div class='alert-red'>❌ Account suspended. Contact BIOS admin.</div>", unsafe_allow_html=True)
-                            else:
-                                supabase.table("doctors").update({"last_login": datetime.now().isoformat()}).eq("id", doc["id"]).execute()
-                                st.session_state.logged_in = True
-                                st.session_state.doctor = doc
-                                st.rerun()
-                        else:
-                            st.markdown("<div class='alert-red'>❌ Wrong password.</div>", unsafe_allow_html=True)
-                    else:
-                        st.markdown("<div class='alert-red'>❌ Email not found. Please register.</div>", unsafe_allow_html=True)
-                else:
-                    st.warning("Email aur password dono bharein.")
-            st.markdown("</div>", unsafe_allow_html=True)
+          if st.button("Login to BIOS", key="login_btn"):
+    if email and password:
+        st.write(f"Trying: {email}")
+        result = supabase.table("doctors").select("*").eq("email", email.lower()).execute()
+        st.write(f"Result: {result.data}")
+        if result.data:
+            doc = result.data[0]
+            st.write(f"DB password: {doc['password_hash']}")
+            st.write(f"Input password: {password}")
+            st.write(f"Match: {doc['password_hash'] == password}")
 
         with tab2:
             st.markdown("<div class='card'>", unsafe_allow_html=True)
