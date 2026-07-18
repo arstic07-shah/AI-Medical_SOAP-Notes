@@ -641,7 +641,7 @@ if not st.session_state.logged_in:
     show_login()
 else:
     # Admin check
-    if st.session_state.doctor and st.session_state.doctor.get("email") == "admin@bios.pk":
+    if st.session_state.doctor and st.session_state.doctor.get("email") == "hq@bios.pk":
         show_admin()
     else:
         show_app()
