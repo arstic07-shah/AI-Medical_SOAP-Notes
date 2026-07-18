@@ -95,7 +95,7 @@ RED FLAGS ⚠️
 
 # ── HELPERS ──────────────────────────────────────────────────────────────────
 def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
+    return password
 
 def generate_patient_id():
     now = datetime.now()
